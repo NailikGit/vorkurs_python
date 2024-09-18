@@ -1,8 +1,6 @@
 import requests
 
-if __name__ == "__main__":
-    begin: str = "Frühstücksfleisch"
-    end: str = "Python (Programmiersprache)"
+def wikipedia_game(begin: str, end: str) -> list[str]:
     req: str = begin
 
     path: list[str] = [begin]
@@ -23,9 +21,13 @@ if __name__ == "__main__":
 
         path.append(req)
 
-    print("path taken: ", end = "")
-    for i in path:
-        if i == begin:
-            print(i, end = "")
-        else:
-            print(f", {i}", end = "")
+    return path
+
+
+if __name__ == "__main__":
+    begin: str = input("Startartikel: ")
+    end: str = input("Endartikel: ")
+    
+    path: list[str] = wikipedia_game(begin, end)
+
+    print(f"path taken: {path}")
