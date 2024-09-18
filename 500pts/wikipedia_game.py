@@ -8,7 +8,7 @@ if __name__ == "__main__":
     path: list[str] = [begin]
 
     while not req == end:
-        r = requests.get(f"https://de.wikipedia.org/w/api.php?action=query&prop=links&pllimit=max&format=json&titles={req}")
+        r: requests.Response = requests.get(f"https://de.wikipedia.org/w/api.php?action=query&prop=links&pllimit=max&format=json&titles={req}")
         d: dict = r.json()
         l: list[dict[str, str]] = d["query"]["pages"][list(d["query"]["pages"].keys())[0]]["links"]
 
