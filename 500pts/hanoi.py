@@ -68,27 +68,27 @@ class TuermeVonHanoi():
                 r2 += 1
         b: bool = ((r1 == self.size) or (r2 == self.size))
         if b:
-            print("Du hast gewonnen!", end = " ")
+            print("you've won!", end = " ")
             if self.count == (2**self.size - 1):
-                print("Und sogar über den optimalen Weg!")
+                print("and optimally at that!")
         return b
 
     def reset(self):
         self.__init__(self.size)
 
 
-def main():
-    t = TuermeVonHanoi(5)
+def game(plates: int):
+    t = TuermeVonHanoi(plates)
     print(t)
-    print("hi")
 
     while True:
         if t.status(): break
-        a = int(input()) - 1
-        b = int(input()) - 1
+        a = int(input("move plate from tower: ")) - 1
+        b = int(input("to tower: ")) - 1
         t.move(a, b)
         print(t)
 
 
 if __name__ == "__main__":
-    main()
+    plates: int = int(input("number of plates: "))
+    game(plates)
