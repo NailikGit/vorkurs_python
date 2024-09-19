@@ -84,7 +84,6 @@ class TowersOfHanoi():
     def solve_iterative(self):
         """solves the towers of hanoi using an iterative algorithm"""
         i = 1
-        print(self)
         while not self.status():
             for j in range(0, self.size):
                 if (i & 2**j):
@@ -96,8 +95,22 @@ class TowersOfHanoi():
                         break
             i += 1
             print(self)
-        
+
+    def solve_recursive(self, disk: int):
+        """solves the towers of hanoi using a recursive algorithm"""
+        if disk == 0: return
+        self.solve_recursive(disk - 1)
+        if disk % 2 == 0:
+            self.moveL(self.search(disk))
+        else:
+            self.moveR(self.search(disk))
+        self.solve_recursive(disk - 1)
+        print(self)
+        self.status()
+
+
     def status(self) -> bool:
+        """returns the status of the game, i.e. True if it is finished"""
         r1: int = 0
         r2: int = 0
         l: list[int] = [i for i in range(self.size, 0, -1)]
@@ -114,26 +127,31 @@ class TowersOfHanoi():
         return b
 
     def reset(self):
+        """resets the towers of hanoi to their starting position"""
         self.__init__(self.size)
 
     def game(self):
-        print(t)
-
+        """play the towers of hanoi using user inputs"""
         while True:
-            if t.status(): break
+            if self.status(): break
             a = int(input("move plate from tower: ")) - 1
             b = int(input("to tower: ")) - 1
-            t.move(a, b)
-            print(t)
+            self.move(a, b)
+            print(self)
 
 if __name__ == "__main__":
-    game: bool = bool(int(input("for solver input 1, for user input 0: ")))
-    print(game)
+    game: int = int(input("for recursive solver input 2, for iterative solver input 1, for user input 0: "))
+
     plates: int = int(input("number of plates: "))
 
     t = TowersOfHanoi(plates)
-    
-    if game:
-        t.solve_iterative()
-    else:
-        t.game()
+    print(t)
+
+    match game:
+        case 0:
+            t.game()
+        case 1:
+            t.solve_iterative()            
+        case 2:
+            t.solve_recursive(plates)
+
