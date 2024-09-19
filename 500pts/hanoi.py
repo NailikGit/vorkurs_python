@@ -1,9 +1,11 @@
 class TowersOfHanoi():
+    """class that models the towers of hanoi game including iterative solver"""
     count: int
     size: int
     tower_list: list[list[int]]
     
     def __init__(self, n: int):
+        """constructor"""
         self.count = 0
         self.size = n
         self.tower_list = [[] for i in range(0, 3)]
@@ -11,6 +13,7 @@ class TowersOfHanoi():
             self.tower_list[0].append(i)
     
     def __str__(self) -> str:
+        """adds string representation of the towers of hanoi"""
         print(self.tower_list)
         r: str = ""
         for i in range(self.size - 1, -1, -1):
@@ -34,6 +37,7 @@ class TowersOfHanoi():
         return r
 
     def move(self, origin: int, to: int):
+        """moves the uppermost plate from tower 'origin' to tower 'to'"""
         if origin < 0 or origin > 2: raise Exception("tower doesn't exist")
         if to < 0 or to > 2: raise Exception("tower doesn't exist")
         
@@ -51,12 +55,14 @@ class TowersOfHanoi():
                 self.count += 1
 
     def search(self, n: int) -> int:
+        """returns the number of the tower, that contains 'n', defaults to -1, if 'n' doesn't exist"""
         for i in range(0, 3):
             if n in self.tower_list[i]:
                 return i
         return -1
 
     def moveR(self, origin: int):
+        """moves element from 'origin' one tower to the right (with wrapping)"""
         match origin:
             case 0:
                 self.move(0, 1)
@@ -66,6 +72,7 @@ class TowersOfHanoi():
                 self.move(2, 0)
 
     def moveL(self, origin: int):
+        """moves element from 'origin' one tower to the left (with wrapping)"""
         match origin:
             case 0:
                 self.move(0, 2)
@@ -75,6 +82,7 @@ class TowersOfHanoi():
                 self.move(2, 1)
 
     def solve_iterative(self):
+        """solves the towers of hanoi using an iterative algorithm"""
         i = 1
         print(self)
         while not self.status():
