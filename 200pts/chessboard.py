@@ -1,4 +1,4 @@
-def chessboard(n: int, m: int):
+def chessboard(n: int = 8, m: int = 8):
     even: bool = True
     for counter in range(0, n):
         chessrow = ""

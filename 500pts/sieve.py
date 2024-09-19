@@ -1,4 +1,4 @@
-def prim(max: int) -> list[int]:
+def prim(max: int = 100) -> list[int]:
     """Returns all prime numbers up to 'max'"""
     max -= 1
     l: list[bool] = []
@@ -16,11 +16,10 @@ def prim(max: int) -> list[int]:
 
 if __name__ == '__main__':
     max: str = input("Max: ")
-    if(max):
-        max: int = int(max)
+    if max:
         print(prim(max))
     else:
-        print(prim(100))
+        print(prim())
 
 #[2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89, 97]
 #[2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89, 97]
