@@ -1,5 +1,6 @@
 import requests
 from pprint import pprint
+import os
 
 def getAllTheCatsBreeds() -> list[dict]:
     """
@@ -7,8 +8,8 @@ def getAllTheCatsBreeds() -> list[dict]:
         Die Katzenrassen werden als Dictionaries empfangen.
         Todo: Erstelle Kadsenrassenklasse
     """
-    baseurl = 'https://api.thecatapi.com/v1'
-    antwort = requests.get(f'{baseurl}/breeds')
+    baseurl: str = 'https://api.thecatapi.com/v1'
+    antwort: requests.Response = requests.get(f'{baseurl}/breeds')
     return antwort.json()
 
 
@@ -20,34 +21,34 @@ def filterKadsen(kadsenrasse : dict, minimal_benötigtes_alter : int = 15) -> bo
     """
 
     # min_alter = int(kadsenrasse['life_span'].split(' ')[0])
-    max_alter = int(kadsenrasse['life_span'].split(' ')[-1])
+    max_alter: int = int(kadsenrasse['life_span'].split(' ')[-1])
 
     # Der Marc möchte, dass seine Kadse mind. so alt werden kann
     # wie das minimal benötigte alter
-    if max_alter > minimal_benötigtes_alter:
+    if max_alter >= minimal_benötigtes_alter:
         # TODO: Was ist eigentlich Schönheit?
         return True
-    else:
-        return False
+    return False
 
 
 def ladeKadsenRunter(kadsenrasse : dict):
 
-    breed_id = kadsenrasse['id']
-    kadsenurl = f'https://api.thecatapi.com/v1/images/search?limit=2&breed_ids={breed_id}&api_key=REPLACE_ME'
-    antwort_der_webseite = requests.get(kadsenurl).json()
+    breed_id: str = kadsenrasse['id']
+    kadsenurl: str = f'https://api.thecatapi.com/v1/images/search?limit=2&breed_ids={breed_id}&api_key= live_TGVJ51yKlCMZkAPe1G7soFWHPut1e0HmokGZiWnLn6Jszwi2Fk1sPBLDmeCMeVSN'
+    antwort_der_webseite: list[dict] = requests.get(kadsenurl).json()
 
-    links_zu_den_kadsen = []
+    links_zu_den_kadsen: list[str] = []
     for antwort in antwort_der_webseite:
         links_zu_den_kadsen.append(antwort['url'])
 
     for kadsen_url in links_zu_den_kadsen:
         # Datei Öffnen
-        kadsen_dateiname = f"./images/{breed_id}_{kadsen_url.split('/')[-1]}"
-        kadsen_datei = open(kadsen_dateiname, 'wb')
-        kadsen_daten = requests.get(kadsen_url)
-        kadsen_datei.write(kadsen_daten.content)
-        kadsen_datei.close()
+        kadsen_dateiname: str = f"./images/{breed_id}_{kadsen_url.split('/')[-1]}"
+        os.makedirs(os.path.dirname(kadsen_dateiname), exist_ok = True)
+        with open(kadsen_dateiname, "wb") as kadsen_datei:
+            kadsen_daten: requests.Response = requests.get(kadsen_url)
+            kadsen_datei.write(kadsen_daten.content)
+            kadsen_datei.close()
 
 
 def main():
