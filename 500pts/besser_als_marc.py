@@ -45,19 +45,41 @@ def ladeKadsenRunter(kadsenrasse : dict):
         # Datei Öffnen
         kadsen_dateiname: str = f"./images/{breed_id}_{kadsen_url.split('/')[-1]}"
         os.makedirs(os.path.dirname(kadsen_dateiname), exist_ok = True)
+        if os.path.isfile(kadsen_dateiname): continue
         with open(kadsen_dateiname, "wb") as kadsen_datei:
-            kadsen_daten: requests.Response = requests.get(kadsen_url)
-            kadsen_datei.write(kadsen_daten.content)
-            kadsen_datei.close()
+            try:
+                kadsen_daten: requests.Response = requests.get(kadsen_url)
+                kadsen_datei.write(kadsen_daten.content)
+                kadsen_datei.close()
+            except:
+                kadsen_datei.close()
 
 
-def main():
+def main1():
     kadsenrassen = getAllTheCatsBreeds()
     for kadsenrasse in kadsenrassen:
         if filterKadsen(kadsenrasse):
             # Die Kadsenrasse passt zu Marcs hohen Ansprüchen
             print(f"Rasse: {kadsenrasse['name']} Alter: {kadsenrasse['life_span']} BreedID: {kadsenrasse['id']}")
-            ladeKadsenRunter(kadsenrasse)
+            try:
+                ladeKadsenRunter(kadsenrasse)
+            except:
+                dnf.append(kadsenrasse)
+
+def main2(l: list):
+    for kadsenrasse in l:
+        if filterKadsen(kadsenrasse):
+            # Die Kadsenrasse passt zu Marcs hohen Ansprüchen
+            print(f"Rasse: {kadsenrasse['name']} Alter: {kadsenrasse['life_span']} BreedID: {kadsenrasse['id']}")
+            try:
+                ladeKadsenRunter(kadsenrasse)
+                dnf.remove(kadsenrasse)
+            except:
+                pass
+
 
 if __name__ == '__main__':
-    main()
+    dnf: list = []
+    main1()
+    while dnf:
+        main2(dnf)
