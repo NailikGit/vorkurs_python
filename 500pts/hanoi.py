@@ -63,23 +63,11 @@ class TowersOfHanoi():
 
     def moveR(self, origin: int):
         """moves element from 'origin' one tower to the right (with wrapping)"""
-        match origin:
-            case 0:
-                self.move(0, 1)
-            case 1:
-                self.move(1, 2)
-            case 2:
-                self.move(2, 0)
+        self.move(origin, (origin + 1) % 3)
 
     def moveL(self, origin: int):
         """moves element from 'origin' one tower to the left (with wrapping)"""
-        match origin:
-            case 0:
-                self.move(0, 2)
-            case 1:
-                self.move(1, 0)
-            case 2:
-                self.move(2, 1)
+        self.move(origin, (origin + 2) % 3)
 
     def solve_iterative(self):
         """solves the towers of hanoi using an iterative algorithm"""
