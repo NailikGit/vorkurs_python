@@ -88,10 +88,10 @@ class TowersOfHanoi():
                     else:
                         self.moveR(self.search(j + 1))
                         break
-            print("\x1b[F" * self.size, end = "")
-            print(self, end = "")
-            #if i % 10000 == 0:
-            #    print(i)
+
+            #print("\x1b[F" * self.size, end = "")
+            #print(self, end = "")
+
 
     def solve_iterative_with_search(self):
         """solves the towers of hanoi using an iterative algorithm"""
@@ -102,44 +102,36 @@ class TowersOfHanoi():
                 self.moveL(self.search(plate))
             else:
                 self.moveR(self.search(plate))
-            print("\x1b[F" * self.size, end = "")
-            print(self, end = "")
-            #if i % 10000 == 0:
-            #    print(i)
+
+            #print("\x1b[F" * self.size, end = "")
+            #print(self, end = "")
 
     def solve_iterative(self):
         """solves the towers of hanoi using an iterative algorithm"""
         while not self.status():
             xor = self.count ^ (self.count + 1)
             plate = xor.bit_count()
-            if (plate % 2) == 0:
-                self.moveL((((self.count >> plate) % 3) << 1) % 3)
-            else:
-                self.moveR((self.count >> plate) % 3)
-            i += 1
-            print("\x1b[F" * self.size, end = "")
-            print(self, end = "")
-            #if i % 10000 == 0:
-            #    print(i)
+            move_direction = (plate % 2) == 0
+            move_from = (self.count >> (plate - int(move_direction))) % 3
 
+            self.move(move_from, (move_from + move_direction + 1) % 3)
 
-    def solve_recursive_with_search(self, disk: int):
+            #print(f"\x1b[{self.size}F", end = "")
+            #print(self, end = "")
+
+    def solve_recursive_with_search(self, plate: int):
         """solves the towers of hanoi using a recursive algorithm"""
-        if disk == 0: return
-        self.solve_recursive(disk - 1)
-        if disk % 2 == 0:
-            self.moveL(self.search(disk))
+        if plate == 0: return
+        self.solve_recursive(plate - 1)
+        if plate % 2 == 0:
+            self.moveL(self.search(plate))
         else:
-            self.moveR(self.search(disk))
+            self.moveR(self.search(plate))
 
-        #if self.count % 10000 == 0:
-        #    print(self.count)
         print("\x1b[F" * self.size, end = "")
         print(self, end = "")
 
-        self.solve_recursive(disk - 1)
-        
-        self.status()
+        self.solve_recursive(plate - 1)
 
     def solve_recursive(self, plate: int):
         """solves the towers of hanoi using a recursive algorithm"""
@@ -149,9 +141,7 @@ class TowersOfHanoi():
             self.moveL((((self.count >> plate) % 3) << 1) % 3)
         else:
             self.moveR((self.count >> plate) % 3)
-        
-        #if self.count % 10000 == 0:
-        #    print(self.count)
+
         print("\x1b[F" * self.size, end = "")
         print(self, end = "")
         
@@ -169,10 +159,6 @@ class TowersOfHanoi():
             if i in self.tower_list[2]:
                 r2 += 1
         b: bool = ((r1 == self.size) or (r2 == self.size))
-        if b:
-            print("you've won!", end = " ")
-            if self.count == (2**self.size - 1):
-                print("and optimally at that!", end = "")
         return b
 
     def reset(self):
@@ -186,38 +172,56 @@ class TowersOfHanoi():
             a = int(input("move plate from tower: ")) - 1
             b = int(input("to tower: ")) - 1
             self.move(a, b)
-            print(self)
+            print(f"\x1b[{self.count}F", end = "")
+            print(self, end = "")
+
+    def end(self):
+        if self.status():
+            print("you've won", end = "")
+            if self.count == ((1 << self.size) - 1):
+                print(" and optimally at that", end = "")
+        print("!")
 
 if __name__ == "__main__":
-    global aosf
-    aosf = 1
-
     game: int = int(input("for recursive solver input 2, for iterative solver input 1, for user input 0: "))
 
     plates: int = int(input("number of plates: "))
 
     t = TowersOfHanoi(plates)
-    print(t)
-    print("\x1b[F", end = "")
-    #print("\x1b[F" * t.size, end = "")
+    print(t, end = "")
 
-    start = 0.0
     o: str = ""
+    ws: str = ""
     n: str = ""
+    
     match game:
         case 0:
             t.game()
         case 1:
-            start = time.time()
             t.solve_iterative()
-            n = f"new took: {time.time() - start}s"
-            time.sleep(1)
-            t.reset()
-            start = time.time()
-            t.solve_iterative_with_search()
-            o = f"old took: {time.time() - start}s"
         case 2:
             t.solve_recursive(plates)
-            t.status()
-    print()
-    print(n + "\n" + o)
+        case 3:
+            ostart = time.perf_counter()
+            t.solve_iterative_old()
+            oend = time.perf_counter() - ostart
+            o = f"unoptimized took:           {oend}s"
+
+            t.reset()
+
+            wsstart = time.perf_counter()
+            t.solve_iterative_with_search()
+            wsend = time.perf_counter() - wsstart
+            ws = f"optimized with search took: {wsend}s"
+
+            t.reset()
+
+            nstart = time.perf_counter()
+            t.solve_iterative_with_search()
+            nend = time.perf_counter() - nstart
+            n = f"fully optimized took:       {nend}s"
+
+            print(f"\x1b[{t.size}F", end = "")
+            print(t)
+            t.end()
+            print(o + "\n" + ws + "\n" + n)
