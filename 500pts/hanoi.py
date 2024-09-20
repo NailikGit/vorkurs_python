@@ -1,5 +1,8 @@
+import time
+
 class TowersOfHanoi():
     """class that models the towers of hanoi game including iterative solver"""
+    global aosf
     count: int
     size: int
     tower_list: list[list[int]]
@@ -14,7 +17,6 @@ class TowersOfHanoi():
     
     def __str__(self) -> str:
         """adds string representation of the towers of hanoi"""
-        print(self.tower_list)
         r: str = ""
         for i in range(self.size - 1, -1, -1):
             for j in self.tower_list:
@@ -22,7 +24,10 @@ class TowersOfHanoi():
                 sb: str = ""
                 try:
                     if j[i]:
-                        sb = (self.size - j[i]) * " " + (j[i]) * "-"
+                        if j[i] > 9:
+                            sb = (self.size - j[i]) * " " + (j[i] - 1) * "-"
+                        else:
+                            sb = (self.size - j[i]) * " " + (j[i]) * "-"
                         se = (j[i]) * "-" + (self. size - j[i]) * " "
                     else:
                         sb = self.size * " "
@@ -57,10 +62,11 @@ class TowersOfHanoi():
     def search(self, n: int) -> int:
         """returns the number of the tower, that contains 'n', defaults to -1, if 'n' doesn't exist"""
         for i in range(0, 3):
-            top: int = self.tower_list[i].pop()
-            self.tower_list[i].append(top)
-            if top == n:
-                return i
+            if(self.tower_list[i]):
+                top: int = self.tower_list[i].pop()
+                self.tower_list[i].append(top)
+                if top == n:
+                    return i
         return -1
 
     def moveR(self, origin: int):
@@ -71,22 +77,53 @@ class TowersOfHanoi():
         """moves element from 'origin' one tower to the left (with wrapping)"""
         self.move(origin, (origin + 2) % 3)
 
-    def solve_iterative(self):
+    def solve_iterative_old(self):
         """solves the towers of hanoi using an iterative algorithm"""
-        i = 1
         while not self.status():
             for j in range(0, self.size):
-                if (i & 2**j):
+                if ((self.count + 1) & 2**j):
                     if j % 2 == 0:
                         self.moveL(self.search(j + 1))
                         break
                     else:
                         self.moveR(self.search(j + 1))
                         break
-            i += 1
-            print(self)
+            print("\x1b[F" * self.size, end = "")
+            print(self, end = "")
+            #if i % 10000 == 0:
+            #    print(i)
 
-    def solve_recursive(self, disk: int):
+    def solve_iterative_with_search(self):
+        """solves the towers of hanoi using an iterative algorithm"""
+        while not self.status():
+            xor = self.count ^ (self.count + 1)
+            plate = xor.bit_count()
+            if (plate % 2) == 0:
+                self.moveL(self.search(plate))
+            else:
+                self.moveR(self.search(plate))
+            print("\x1b[F" * self.size, end = "")
+            print(self, end = "")
+            #if i % 10000 == 0:
+            #    print(i)
+
+    def solve_iterative(self):
+        """solves the towers of hanoi using an iterative algorithm"""
+        while not self.status():
+            xor = self.count ^ (self.count + 1)
+            plate = xor.bit_count()
+            if (plate % 2) == 0:
+                self.moveL((((self.count >> plate) % 3) << 1) % 3)
+            else:
+                self.moveR((self.count >> plate) % 3)
+            i += 1
+            print("\x1b[F" * self.size, end = "")
+            print(self, end = "")
+            #if i % 10000 == 0:
+            #    print(i)
+
+
+    def solve_recursive_with_search(self, disk: int):
         """solves the towers of hanoi using a recursive algorithm"""
         if disk == 0: return
         self.solve_recursive(disk - 1)
@@ -94,9 +131,31 @@ class TowersOfHanoi():
             self.moveL(self.search(disk))
         else:
             self.moveR(self.search(disk))
+
+        #if self.count % 10000 == 0:
+        #    print(self.count)
+        print("\x1b[F" * self.size, end = "")
+        print(self, end = "")
+
         self.solve_recursive(disk - 1)
-        print(self)
+        
         self.status()
+
+    def solve_recursive(self, plate: int):
+        """solves the towers of hanoi using a recursive algorithm"""
+        if plate == 0: return
+        self.solve_recursive(plate - 1)
+        if plate % 2 == 0:
+            self.moveL((((self.count >> plate) % 3) << 1) % 3)
+        else:
+            self.moveR((self.count >> plate) % 3)
+        
+        #if self.count % 10000 == 0:
+        #    print(self.count)
+        print("\x1b[F" * self.size, end = "")
+        print(self, end = "")
+        
+        self.solve_recursive(plate - 1)
 
 
     def status(self) -> bool:
@@ -113,7 +172,7 @@ class TowersOfHanoi():
         if b:
             print("you've won!", end = " ")
             if self.count == (2**self.size - 1):
-                print("and optimally at that!")
+                print("and optimally at that!", end = "")
         return b
 
     def reset(self):
@@ -130,18 +189,35 @@ class TowersOfHanoi():
             print(self)
 
 if __name__ == "__main__":
+    global aosf
+    aosf = 1
+
     game: int = int(input("for recursive solver input 2, for iterative solver input 1, for user input 0: "))
 
     plates: int = int(input("number of plates: "))
 
     t = TowersOfHanoi(plates)
     print(t)
+    print("\x1b[F", end = "")
+    #print("\x1b[F" * t.size, end = "")
 
+    start = 0.0
+    o: str = ""
+    n: str = ""
     match game:
         case 0:
             t.game()
         case 1:
-            t.solve_iterative()            
+            start = time.time()
+            t.solve_iterative()
+            n = f"new took: {time.time() - start}s"
+            time.sleep(1)
+            t.reset()
+            start = time.time()
+            t.solve_iterative_with_search()
+            o = f"old took: {time.time() - start}s"
         case 2:
             t.solve_recursive(plates)
-
+            t.status()
+    print()
+    print(n + "\n" + o)
