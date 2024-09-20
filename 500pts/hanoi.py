@@ -57,7 +57,9 @@ class TowersOfHanoi():
     def search(self, n: int) -> int:
         """returns the number of the tower, that contains 'n', defaults to -1, if 'n' doesn't exist"""
         for i in range(0, 3):
-            if n in self.tower_list[i]:
+            top: int = self.tower_list[i].pop()
+            self.tower_list[i].append(top)
+            if top == n:
                 return i
         return -1
 
