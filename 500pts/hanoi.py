@@ -59,8 +59,12 @@ class TowersOfHanoi():
                 self.tower_list[to].append(a)
                 self.count += 1
 
+    def forceMove(self, origin: int, to : int):
+        """moves the uppermost plate from tower 'origin' to tower 'to' without checking legal moves"""
+        self.tower_list[to].append(self.tower_list[origin].pop)
+
     def search(self, n: int) -> int:
-        """returns the number of the tower, that contains 'n', defaults to -1, if 'n' doesn't exist"""
+        """(deprecated) returns the number of the tower, that contains 'n', defaults to -1, if 'n' doesn't exist"""
         for i in range(0, 3):
             if(self.tower_list[i]):
                 top: int = self.tower_list[i].pop()
@@ -70,15 +74,15 @@ class TowersOfHanoi():
         return -1
 
     def moveR(self, origin: int):
-        """moves element from 'origin' one tower to the right (with wrapping)"""
-        self.move(origin, (origin + 1) % 3)
+        """(deprecated) moves element from 'origin' one tower to the right (with wrapping)"""
+        self.forceMove(origin, (origin + 1) % 3)
 
     def moveL(self, origin: int):
-        """moves element from 'origin' one tower to the left (with wrapping)"""
-        self.move(origin, (origin + 2) % 3)
+        """(deprecated) moves element from 'origin' one tower to the left (with wrapping)"""
+        self.forceMove(origin, (origin + 2) % 3)
 
-    def solve_iterative_old(self):
-        """solves the towers of hanoi using an iterative algorithm"""
+    def _solve_iterative_old(self):
+        """(deprecated) solves the towers of hanoi using an iterative algorithm"""
         while not self.status():
             for j in range(0, self.size):
                 if ((self.count + 1) & 2**j):
@@ -92,9 +96,8 @@ class TowersOfHanoi():
             #print("\x1b[F" * self.size, end = "")
             #print(self, end = "")
 
-
-    def solve_iterative_with_search(self):
-        """solves the towers of hanoi using an iterative algorithm"""
+    def _solve_iterative_with_search(self):
+        """(deprecated) solves the towers of hanoi using an iterative algorithm"""
         while not self.status():
             xor = self.count ^ (self.count + 1)
             plate = xor.bit_count()
@@ -114,13 +117,13 @@ class TowersOfHanoi():
             move_direction = (plate % 2) == 0
             move_from = (self.count >> (plate - int(move_direction))) % 3
 
-            self.move(move_from, (move_from + move_direction + 1) % 3)
+            self.forceMove(move_from, (move_from + move_direction + 1) % 3)
 
             #print(f"\x1b[{self.size}F", end = "")
             #print(self, end = "")
 
-    def solve_recursive_with_search(self, plate: int):
-        """solves the towers of hanoi using a recursive algorithm"""
+    def _solve_recursive_with_search(self, plate: int):
+        """(deprecated) solves the towers of hanoi using a recursive algorithm"""
         if plate == 0: return
         self.solve_recursive(plate - 1)
         if plate % 2 == 0:
@@ -138,7 +141,7 @@ class TowersOfHanoi():
         if plate == 0: return
         self.solve_recursive(plate - 1)
         if plate % 2 == 0:
-            self.moveL((((self.count >> plate) % 3) << 1) % 3)
+            self.moveL((self.count >> (plate - 1)) % 3)
         else:
             self.moveR((self.count >> plate) % 3)
 
@@ -190,10 +193,6 @@ if __name__ == "__main__":
     t = TowersOfHanoi(plates)
     print(t, end = "")
 
-    o: str = ""
-    ws: str = ""
-    n: str = ""
-    
     match game:
         case 0:
             t.game()
