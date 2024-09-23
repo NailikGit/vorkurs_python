@@ -43,9 +43,13 @@ class TowersOfHanoi():
 
     def move(self, origin: int, to: int):
         """moves the uppermost plate from tower 'origin' to tower 'to'"""
-        if origin < 0 or origin > 2: raise Exception("tower doesn't exist")
-        if to < 0 or to > 2: raise Exception("tower doesn't exist")
-        
+        try:
+            if origin < 0 or origin > 2: raise Exception(f"tower {origin} doesn't exist")
+            if to < 0 or to > 2: raise Exception(f"tower {to} doesn't exist")
+        except Exception:
+            print(Exception)
+            return
+
         if self.tower_list[origin]:
             a: int = self.tower_list[origin].pop()
             if self.tower_list[to]:
