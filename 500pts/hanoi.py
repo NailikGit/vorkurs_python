@@ -159,16 +159,7 @@ class TowersOfHanoi():
 
     def status(self) -> bool:
         """returns the status of the game, i.e. True if it is finished"""
-        r1: int = 0
-        r2: int = 0
-        l: list[int] = [i for i in range(self.size, 0, -1)]
-        for i in l:
-            if i in self.tower_list[1]:
-                r1 += 1
-            if i in self.tower_list[2]:
-                r2 += 1
-        b: bool = ((r1 == self.size) or (r2 == self.size))
-        return b
+        return len(self.tower_list[2]) == self.size
 
     def reset(self):
         """resets the towers of hanoi to their starting position"""
