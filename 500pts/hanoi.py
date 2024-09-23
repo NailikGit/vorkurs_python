@@ -1,4 +1,5 @@
 import time
+import sys
 
 class TowersOfHanoi():
     """class that models the towers of hanoi game including iterative solver"""
@@ -119,7 +120,7 @@ class TowersOfHanoi():
         while not self.status():
             xor = self.count ^ (self.count + 1)
             plate = xor.bit_count()
-            move_direction = (plate % 2) == 0
+            move_direction = (plate ^ self.size + 1) & 1
             move_from = (self.count >> (plate - int(move_direction))) % 3
 
             self.forceMove(move_from, (move_from + move_direction + 1) % 3)
@@ -191,25 +192,28 @@ class TowersOfHanoi():
         print("!")
 
 if __name__ == "__main__":
-    game: int = int(input("for recursive solver input 2, for iterative solver input 1, for user input 0: "))
-
-    plates: int = int(input("number of plates: "))
+    try:
+        game = sys.argv[1]
+        plates = int(sys.argv[2])
+    except:
+        print("usage: python hanoi.py {user, iterative, recursive} {number of plates}")
+        exit()
 
     t = TowersOfHanoi(plates)
     print(t, end = "")
 
     match game:
-        case 0:
+        case "user":
             t.game()
-        case 1:
+        case "iterative":
             t.solve_iterative()
             print(f"\x1b[{plates + 1}F")
             print(t)
-        case 2:
+        case "recursive":
             t.solve_recursive(plates)
             print(f"\x1b[{plates + 1}F")
             print(t)
-        case 3:
+        case "test":
             ostart = time.perf_counter()
             t._solve_iterative_old()
             oend = time.perf_counter() - ostart
