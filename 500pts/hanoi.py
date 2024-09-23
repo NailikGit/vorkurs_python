@@ -65,8 +65,8 @@ class TowersOfHanoi():
 
     def forceMove(self, origin: int, to : int):
         """moves the uppermost plate from tower 'origin' to tower 'to' without checking legal moves"""
-        self.tower_list[to].append(self.tower_list[origin].pop)
-        self.counter += 1
+        self.tower_list[to].append(self.tower_list[origin].pop())
+        self.count += 1
 
     def search(self, n: int) -> int:
         """(deprecated) returns the number of the tower, that contains 'n', defaults to -1, if 'n' doesn't exist"""
@@ -203,26 +203,29 @@ if __name__ == "__main__":
             t.game()
         case 1:
             t.solve_iterative()
+            print(f"\x1b[{plates + 1}F")
             print(t)
         case 2:
             t.solve_recursive(plates)
+            print(f"\x1b[{plates + 1}F")
+            print(t)
         case 3:
             ostart = time.perf_counter()
-            t.solve_iterative_old()
+            t._solve_iterative_old()
             oend = time.perf_counter() - ostart
             o = f"unoptimized took:           {oend}s"
 
             t.reset()
 
             wsstart = time.perf_counter()
-            t.solve_iterative_with_search()
+            t._solve_iterative_with_search()
             wsend = time.perf_counter() - wsstart
             ws = f"optimized with search took: {wsend}s"
 
             t.reset()
 
             nstart = time.perf_counter()
-            t.solve_iterative_with_search()
+            t.solve_iterative()
             nend = time.perf_counter() - nstart
             n = f"fully optimized took:       {nend}s"
 
